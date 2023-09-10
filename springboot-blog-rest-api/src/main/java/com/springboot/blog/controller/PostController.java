@@ -1,6 +1,7 @@
 package com.springboot.blog.controller;
 
 import com.springboot.blog.payload.PostDto;
+import com.springboot.blog.payload.PostResponse;
 import com.springboot.blog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,31 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        return  new ResponseEntity<>(postService.getAllPosts(), HttpStatus.OK);
+    public ResponseEntity<PostResponse> getAllPosts(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir
+
+
+            ) {
+        return  new ResponseEntity<>(postService.getAllPosts(pageNo, pageSize, sortBy, sortDir), HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable long id) {
+        return new ResponseEntity<>(postService.getPostById(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public  ResponseEntity<PostDto> updatePostByiD(@PathVariable long id, @RequestBody PostDto postDto) {
+        return new ResponseEntity<>(postService.updatePostById(id, postDto) , HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public  ResponseEntity<String> deletePostById(@PathVariable long id){
+        postService.deletePostById(id);
+        return new ResponseEntity<String>("Deleted Post!", HttpStatus.OK);
+    }
+
 }
